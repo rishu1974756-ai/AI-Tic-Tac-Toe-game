@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF--8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Tic-Tac-Toe Trainer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            keyframes: {
+              'pop-in': {
+                '0%': { transform: 'scale(0.5)', opacity: '0' },
+                '100%': { transform: 'scale(1)', opacity: '1' },
+              },
+              'slide-in': {
+                '0%': { transform: 'translateY(20px)', opacity: '0' },
+                '100%': { transform: 'translateY(0)', opacity: '1' },
+              }
+            },
+            animation: {
+              'pop-in': 'pop-in 0.3s ease-out forwards',
+              'slide-in': 'slide-in 0.5s ease-out forwards',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      .icon-x line {
+        stroke-dasharray: 17; /* Approx. length of the line */
+        stroke-dashoffset: 17;
+        animation: draw-stroke 0.3s ease-out forwards;
+      }
+      .icon-x line:nth-child(2) {
+        animation-delay: 0.2s; /* Stagger the animation for the two lines */
+      }
+      .icon-o circle {
+        stroke-dasharray: 57; /* Approx. circumference of the circle */
+        stroke-dashoffset: 57;
+        animation: draw-stroke 0.5s ease-out forwards;
+      }
+      @keyframes draw-stroke {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.27.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
+  }
+}
+</script>
+</head>
+  <body class="bg-slate-100 dark:bg-gray-900 transition-colors duration-300">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

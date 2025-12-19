@@ -1,0 +1,5 @@
+{
+  "name": "AI Tic-Tac-Toe Trainer",
+  "description": "A fully interactive AI Tic-Tac-Toe game where you compete against an intelligent AI opponent that learns and improves. The game features three difficulty levels, a clean UI, and smart AI behavior that adapts through experience.",
+  "requestFramePermissions": []
+}
