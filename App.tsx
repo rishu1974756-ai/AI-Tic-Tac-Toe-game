@@ -1,8 +1,9 @@
+
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Difficulty, type BoardState, type Player, type Scores } from './types';
-import { WINNING_COMBINATIONS } from './constants';
-import { getHardAIMove, getMediumAIMove, getAICommentary, getTrainedAIMove } from './services/geminiService';
-import { Icon } from './components/Icon';
+import { Difficulty, type BoardState, type Player, type Scores } from './types.ts';
+import { WINNING_COMBINATIONS } from './constants.ts';
+import { getHardAIMove, getMediumAIMove, getAICommentary, getTrainedAIMove } from './services/geminiService.ts';
+import { Icon } from './components/Icon.tsx';
 
 const useLocalStorage = <T,>(key: string, initialValue: T): [T, React.Dispatch<React.SetStateAction<T>>] => {
   const [storedValue, setStoredValue] = useState<T>(() => {

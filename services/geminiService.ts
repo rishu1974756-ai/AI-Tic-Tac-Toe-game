@@ -1,14 +1,11 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
-import type { BoardState, Player } from '../types';
-import { winningGameSequences } from '../data/trainingData';
+import type { BoardState, Player } from '../types.ts';
+import { winningGameSequences } from '../data/trainingData.ts';
+import { WINNING_COMBINATIONS } from '../constants.ts';
 
-const API_KEY = process.env.API_KEY;
-
-if (!API_KEY) {
-  throw new Error("API_KEY environment variable not set");
-}
-
-const ai = new GoogleGenAI({ apiKey: API_KEY });
+// Safely access API_KEY from environment
+const API_KEY = typeof process !== 'undefined' ? process.env.API_KEY : undefined;
 
 const getBoardString = (board: BoardState): string => {
   let boardStr = '';
@@ -19,8 +16,16 @@ const getBoardString = (board: BoardState): string => {
   return boardStr;
 };
 
+const getAIInstance = () => {
+  if (!API_KEY) {
+    throw new Error("API_KEY environment variable not set. Please ensure it is configured in your hosting environment.");
+  }
+  return new GoogleGenAI({ apiKey: API_KEY });
+};
+
 export const getHardAIMove = async (board: BoardState, moveHistory: number[]): Promise<number> => {
   try {
+    const ai = getAIInstance();
     const prompt = `
       You are an unbeatable Tic-Tac-Toe AI expert playing as 'O' against a human 'X'.
       Your goal is to win if possible, otherwise, force a draw. You must never lose.
@@ -73,6 +78,7 @@ export const getHardAIMove = async (board: BoardState, moveHistory: number[]): P
 
 export const getTrainedAIMove = async (board: BoardState, moveHistory: number[]): Promise<number> => {
   try {
+    const ai = getAIInstance();
     // Find relevant game examples from training data
     const relevantExamples = winningGameSequences
       .filter(seq => {
@@ -102,7 +108,7 @@ export const getTrainedAIMove = async (board: BoardState, moveHistory: number[])
     `;
     
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-pro", // Using a more powerful model for better analysis
+      model: "gemini-2.5-pro",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
@@ -131,7 +137,6 @@ export const getTrainedAIMove = async (board: BoardState, moveHistory: number[])
     }
   } catch (error) {
     console.error("Error fetching move from Gemini API (Trained):", error);
-    // Fallback to medium AI if the trained one fails
     return getMediumAIMove(board);
   }
 };
@@ -139,6 +144,7 @@ export const getTrainedAIMove = async (board: BoardState, moveHistory: number[])
 
 export const getAICommentary = async (board: BoardState, aiMove: number): Promise<string> => {
     try {
+        const ai = getAIInstance();
         const prompt = `
         You are a witty and slightly taunting AI opponent in a game of Tic-Tac-Toe.
         The board is:
@@ -165,7 +171,6 @@ export const getAICommentary = async (board: BoardState, aiMove: number): Promis
 };
 
 
-// Medium AI logic is also included here as a fallback for the hard AI
 const findWinningMove = (board: BoardState, player: Player): number | null => {
     for (let i = 0; i < 9; i++) {
         if (board[i] === null) {
@@ -180,7 +185,6 @@ const findWinningMove = (board: BoardState, player: Player): number | null => {
     return null;
 };
 
-import { WINNING_COMBINATIONS } from '../constants';
 const checkWinner = (board: BoardState) => {
     for (const combination of WINNING_COMBINATIONS) {
       const [a, b, c] = combination;
@@ -192,15 +196,12 @@ const checkWinner = (board: BoardState) => {
 };
 
 export const getMediumAIMove = (board: BoardState): number => {
-    // 1. If AI can win, make that move.
     const winningMove = findWinningMove(board, 'O');
     if (winningMove !== null) return winningMove;
 
-    // 2. If Player is about to win, block that move.
     const blockingMove = findWinningMove(board, 'X');
     if (blockingMove !== null) return blockingMove;
 
-    // 3. Play a smart random move (center, corners, then sides).
     const center = 4;
     if (board[center] === null) return center;
 
@@ -216,7 +217,6 @@ export const getMediumAIMove = (board: BoardState): number => {
         return availableSides[Math.floor(Math.random() * availableSides.length)];
     }
     
-    // This case should not be reached in a normal game
     const availableCells = board.map((cell, index) => cell === null ? index : null).filter(i => i !== null) as number[];
     return availableCells[0];
 };
